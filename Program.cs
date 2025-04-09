@@ -9,17 +9,16 @@ namespace AlgorytmWsteczejPropagacjiXOR
     internal class Program
     {
         private static Random rand = new Random();
-        public static double SiecNeuronowa(double[] wejscie, double[] Osobnik, int LiczbaPmNeurona)
+        public static (double, double, double) SiecNeuronowa(double[] wejscie, double[] Wagi, int LiczbaWagNeurona)
         {
-            double[] neurony = new double[Osobnik.Length / LiczbaPmNeurona];
-            double wyjscie = 0.0;
+            double[] neurony = new double[Wagi.Length / LiczbaWagNeurona];
             int y = 0;
-            for (int i = 0; i < Osobnik.Length / LiczbaPmNeurona; i++)
+            for (int i = 0; i < Wagi.Length / LiczbaWagNeurona; i++)
             {
-                double[] PmTymczasowe = new double[LiczbaPmNeurona];
-                for (int j = 0; j < LiczbaPmNeurona; j++)
+                double[] PmTymczasowe = new double[LiczbaWagNeurona];
+                for (int j = 0; j < LiczbaWagNeurona; j++)
                 {
-                    PmTymczasowe[j] = Osobnik[y];
+                    PmTymczasowe[j] = Wagi[y];
                     y++;
                 }
                 if (i <= 1)
@@ -30,14 +29,13 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 else
                 {
                     double[] neuronki = {
-                        neurony[i - 1],
-                        neurony[i - 2]
+                        neurony[0],
+                        neurony[1]
                     };
                     neurony[i] = FAktywacji(Neuron(PmTymczasowe, neuronki));
                 }
             }
-            wyjscie = neurony[(Osobnik.Length / LiczbaPmNeurona) - 1];
-            return wyjscie;
+            return (neurony[0], neurony[1], neurony[2]);
         }
         public static double FAktywacji(double WartNeurona, double B = 1.0)
         {
@@ -47,12 +45,11 @@ namespace AlgorytmWsteczejPropagacjiXOR
         public static double Neuron(double[] Wagi, double[] wejscie)
         {
             double neuron = 0;
-
-            for (int j = 0; j < wejscie.Length; j++)
+            neuron += Wagi[0];
+            for (int j = 1; j <= wejscie.Length; j++)
             {
-                neuron += Wagi[j] * wejscie[j];
-            }
-            neuron += Wagi[Wagi.Length - 1];
+                neuron += Wagi[j] * wejscie[j-1];
+            }  
             return neuron;
         }
         static void Main(string[] args)
@@ -73,7 +70,12 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 new double[] { 1, 1 }
             };
             double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
+            for (int i = 0; i < WejsciaSieci.Length; i++)
+            {
+                (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
+                double d = OczekiwaneWYniki[i];
+            }
 
-        }
+            }
     }
 }
