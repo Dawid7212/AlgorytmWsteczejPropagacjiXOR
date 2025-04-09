@@ -57,7 +57,23 @@ namespace AlgorytmWsteczejPropagacjiXOR
         }
         static void Main(string[] args)
         {
-            
+            double ParametrUczenia = 0.1;
+            int LicznaNeuronów = 3;
+            int LiczbaWagNeurona = 3;
+            double[] WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
+            for (int i = 0; i < WylosowaneWagi.Length; i++)
+            {
+                WylosowaneWagi[i] = (rand.NextDouble() * 2) - 1;
+            }
+            double[][] WejsciaSieci = new double[][]
+            {
+                new double[] { 0, 0 },
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 1, 1 }
+            };
+            double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
+
         }
     }
 }
