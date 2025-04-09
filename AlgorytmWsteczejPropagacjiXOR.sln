@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgorytmWsteczejPropagacjiXOR", "AlgorytmWsteczejPropagacjiXOR.csproj", "{37B7BD24-A442-4D2E-B731-2FDA20D325A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37B7BD24-A442-4D2E-B731-2FDA20D325A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37B7BD24-A442-4D2E-B731-2FDA20D325A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37B7BD24-A442-4D2E-B731-2FDA20D325A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37B7BD24-A442-4D2E-B731-2FDA20D325A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2371DE87-9E94-4AFD-8238-6E1D9C453905}
+	EndGlobalSection
+EndGlobal
