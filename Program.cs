@@ -54,7 +54,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
         }
         static void Main(string[] args)
         {
-            double ParametrUczenia = 0.1;
+            double ParametrUczenia = 0.3;
             int LicznaNeuronów = 3;
             int LiczbaWagNeurona = 3;
             double[] WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
@@ -70,12 +70,37 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 new double[] { 1, 1 }
             };
             double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
-            for (int i = 0; i < WejsciaSieci.Length; i++)
+            for (int epoki = 0; epoki < 2; epoki++)
             {
-                (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
-                double d = OczekiwaneWYniki[i];
-            }
+                for (int i = 0; i < WejsciaSieci.Length; i++)
+                {
+                    (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
+                    double d = OczekiwaneWYniki[i];
+                    double bladwyjscia1 = d - Nwyjsciowy;
+                    Console.WriteLine("Blad wyjsccia1 = "+bladwyjscia1);
+                    double PoprawkaWyjscia = (d - Nwyjsciowy) * Nwyjsciowy * (1 - Nwyjsciowy);
+                    double PoprawkaNUkryty1 = PoprawkaWyjscia * WylosowaneWagi[7] * NUkryrty1 * (1 - NUkryrty1);
+                    double PoprawkaNUkryty2 = PoprawkaWyjscia * WylosowaneWagi[8] * Nukryty2 * (1 - Nukryty2);
+
+                    WylosowaneWagi[6] += ParametrUczenia * PoprawkaWyjscia; 
+                    WylosowaneWagi[7] += ParametrUczenia * PoprawkaWyjscia * NUkryrty1; 
+                    WylosowaneWagi[8] += ParametrUczenia * PoprawkaWyjscia * Nukryty2; 
+
+                    WylosowaneWagi[0] += ParametrUczenia * PoprawkaNUkryty1;
+                    WylosowaneWagi[1] += ParametrUczenia * PoprawkaNUkryty1 * WejsciaSieci[i][0];
+                    WylosowaneWagi[2] += ParametrUczenia * PoprawkaNUkryty1 * WejsciaSieci[i][1];
+                   
+                    WylosowaneWagi[3] += ParametrUczenia * PoprawkaNUkryty2;
+                    WylosowaneWagi[4] += ParametrUczenia * PoprawkaNUkryty2 * WejsciaSieci[i][0];
+                    WylosowaneWagi[5] += ParametrUczenia * PoprawkaNUkryty2 * WejsciaSieci[i][1];
+
+                    (double NUkryrty1Test, double Nukryty2Test, double NwyjsciowyTest) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
+                    double bladwyjscia2 = d - NwyjsciowyTest;
+                    Console.WriteLine("Blad wyjsccia2 = " + bladwyjscia2);
+                }
 
             }
+            Console.ReadKey();
+        }
     }
 }
