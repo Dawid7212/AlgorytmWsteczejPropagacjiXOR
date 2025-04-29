@@ -59,18 +59,19 @@ namespace AlgorytmWsteczejPropagacjiXOR
             double ParametrUczenia = 0.3;
             int LicznaNeuronów = 3;
             int LiczbaWagNeurona = 3;
-            //WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
-            //for (int i = 0; i < WylosowaneWagi.Length; i++)
-            //{
-            //    WylosowaneWagi[i] = (rand.NextDouble() * 2) - 1;
-            //}
-            WylosowaneWagi = new double[] { 0.3, 0.1, 0.2, 0.6, 0.4, 0.5, 0.9, 0.7, -0.8 };
+            double B = 1;
+            WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
+            for (int i = 0; i < WylosowaneWagi.Length; i++)
+            {
+                WylosowaneWagi[i] = (rand.NextDouble() * 2) - 1;
+            }
+            //WylosowaneWagi = new double[] { 0.3, 0.1, 0.2, 0.6, 0.4, 0.5, 0.9, 0.7, -0.8 };//tego uzywalem tylko dla testow sieci
             
                
           
             double[][] WejsciaSieci = new double[][]
             {
-                new double[] { 1, 0 },
+                new double[] { 0, 0 },
                 new double[] { 0, 1 },
                 new double[] { 1, 0 },
                 new double[] { 1, 1 }
@@ -96,21 +97,21 @@ namespace AlgorytmWsteczejPropagacjiXOR
                     double d = OczekiwaneWYniki[i];
                     //double bladwyjscia1 = d - Nwyjsciowy;
                     //Console.WriteLine("Blad wyjsccia1 = "+bladwyjscia1);
-                    double PoprawkaWyjscia = (d - Nwyjsciowy) * Nwyjsciowy * (1 - Nwyjsciowy);
-                    double PoprawkaNUkryty1 = PoprawkaWyjscia * WylosowaneWagi[7] * NUkryrty1 * (1 - NUkryrty1);
-                    double PoprawkaNUkryty2 = PoprawkaWyjscia * WylosowaneWagi[8] * Nukryty2 * (1 - Nukryty2);
+                    double PoprawkaWyjscia = ParametrUczenia*(d - Nwyjsciowy) *(B* Nwyjsciowy * (1 - Nwyjsciowy));//pmUczenia*błąd wyjscia * pochodna
+                    double PoprawkaNUkryty1 = PoprawkaWyjscia * WylosowaneWagi[7] *(B* NUkryrty1 * (1 - NUkryrty1));
+                    double PoprawkaNUkryty2 = PoprawkaWyjscia * WylosowaneWagi[8] * (B*Nukryty2 * (1 - Nukryty2));
 
-                    WylosowaneWagi[6] += ParametrUczenia * PoprawkaWyjscia;
-                    WylosowaneWagi[7] += ParametrUczenia * PoprawkaWyjscia * NUkryrty1;
-                    WylosowaneWagi[8] += ParametrUczenia * PoprawkaWyjscia * Nukryty2;
+                    WylosowaneWagi[6] +=  PoprawkaWyjscia;
+                    WylosowaneWagi[7] += (PoprawkaWyjscia * NUkryrty1);
+                    WylosowaneWagi[8] += (PoprawkaWyjscia * Nukryty2);
 
-                    WylosowaneWagi[0] += ParametrUczenia * PoprawkaNUkryty1;
-                    WylosowaneWagi[1] += ParametrUczenia * PoprawkaNUkryty1 * WejsciaSieci[i][0];
-                    WylosowaneWagi[2] += ParametrUczenia * PoprawkaNUkryty1 * WejsciaSieci[i][1];
+                    WylosowaneWagi[0] += PoprawkaNUkryty1;
+                    WylosowaneWagi[1] += (PoprawkaNUkryty1 * WejsciaSieci[i][0]);
+                    WylosowaneWagi[2] += (PoprawkaNUkryty1 * WejsciaSieci[i][1]);
 
-                    WylosowaneWagi[3] += ParametrUczenia * PoprawkaNUkryty2;
-                    WylosowaneWagi[4] += ParametrUczenia * PoprawkaNUkryty2 * WejsciaSieci[i][0];
-                    WylosowaneWagi[5] += ParametrUczenia * PoprawkaNUkryty2 * WejsciaSieci[i][1];
+                    WylosowaneWagi[3] += PoprawkaNUkryty2;
+                    WylosowaneWagi[4] += PoprawkaNUkryty2 * WejsciaSieci[i][0];
+                    WylosowaneWagi[5] += PoprawkaNUkryty2 * WejsciaSieci[i][1];
 
                     //(double NUkryrty1Test, double Nukryty2Test, double NwyjsciowyTest) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
                     // double bladwyjscia2 = d - NwyjsciowyTest;
