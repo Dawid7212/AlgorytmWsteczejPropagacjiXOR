@@ -72,25 +72,21 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 new double[] { 1, 1 }
             };
             double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
-            double[][] tablicaTymczasowa = WejsciaSieci;
             for (int epoki = 0; epoki < 20000; epoki++)
             {
-                for (int i = tablicaTymczasowa.Length - 1; i > 0; i--)
+                //dla epok kolejnych niż pierwsza - wejscia uczące sieć są w różniej kolejności
+                if (epoki > 0)
                 {
-                    int j = rand.Next(i + 1);
-                    (tablicaTymczasowa[i], tablicaTymczasowa[j]) = (tablicaTymczasowa[j], tablicaTymczasowa[i]);
+                    for (int i = WejsciaSieci.Length - 1; i > 0; i--)
+                    {
+                        int j = rand.Next(i + 1);
+                        (WejsciaSieci[i], WejsciaSieci[j]) = (WejsciaSieci[j], WejsciaSieci[i]);
+                        (OczekiwaneWYniki[i], OczekiwaneWYniki[j]) = (OczekiwaneWYniki[j], OczekiwaneWYniki[i]);
+                    }
                 }
                 
                 for (int i = 0; i < WejsciaSieci.Length; i++)
                 {
-                    if (epoki > 0)
-                    {
-                        int losoweWejscie = i;
-                    }
-                    else
-                    {
-                        int losoweWejscie = tablicaTymczasowa[i];
-                    }
                     
                     (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
                     double d = OczekiwaneWYniki[i];
