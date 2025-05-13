@@ -6,10 +6,37 @@ namespace AlgorytmWsteczejPropagacjiXOR
 {
     internal class Program
     {
-        public static double[] WylosowaneWagi;
-        public static int LiczbaWagNeurona = 3;
 
         private static Random rand = new Random();
+
+        public static double[] PropagacjaWsteczna(double[] wejscie, double[] OczekiwaneWyjscia, double[] wagi, int[] struktura, double parametrUczenia)
+        {
+
+            double[][] WynikiSieci = SiecNeuronowa(wejscie, wagi, struktura);
+            double B = 1;
+
+            double[][] BledyNeuronow = new double[struktura.Length - 1][]; //[NumerWarstwy][NumerNeuronu]
+
+
+            int ostatniaWarstwa = struktura.Length - 1;
+            BledyNeuronow[ostatniaWarstwa - 1] = new double[struktura[ostatniaWarstwa]];
+            for (int i = 0; i < struktura[ostatniaWarstwa]; i++)//dla neuronow warstwy otatniej
+            {
+                BledyNeuronow[ostatniaWarstwa - 1][i] = parametrUczenia * (OczekiwaneWyjscia[i] - WynikiSieci[ostatniaWarstwa][i])*(B* WynikiSieci[ostatniaWarstwa][i] * (1 - WynikiSieci[ostatniaWarstwa][i]));
+
+            }
+
+            for (int nrWarstwy = struktura.Length - 2; nrWarstwy > 0; nrWarstwy--)//dla neuronow warstw ukrytych
+            {
+
+            }
+
+
+            return wynik;
+        }
+
+
+
 
         public static double[] WylosujWagi(int[] strukturaSieci)
         {
