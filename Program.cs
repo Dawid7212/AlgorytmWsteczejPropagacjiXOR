@@ -11,6 +11,18 @@ namespace AlgorytmWsteczejPropagacjiXOR
 
         private static Random rand = new Random();
 
+        public static double[] WylosujWagi(int[] strukturaSieci)
+        {
+            int liczbaWag = 0;
+            for (int i = 0; i < strukturaSieci.Length - 1; i++)
+                liczbaWag += (strukturaSieci[i] + 1) * strukturaSieci[i + 1];// bo np.: (liczbaneuronowPoprzedniejWarstwy +1 wagaDodatkowaKażdegoNeuronu)*iloscneuronowWKolejnejWarstwie
+
+            double[] wagi = new double[liczbaWag];
+            for (int i = 0; i < wagi.Length; i++)
+                wagi[i] = rand.NextDouble() * 2 - 1;
+
+            return wagi;
+        }
         public static double[][] SiecNeuronowa(double[] wejscie, double[] Wagi, int[] struktura)
         {
             int lWarstw = struktura.Length;
