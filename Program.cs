@@ -22,12 +22,21 @@ namespace AlgorytmWsteczejPropagacjiXOR
             BledyNeuronow[ostatniaWarstwa - 1] = new double[struktura[ostatniaWarstwa]];
             for (int i = 0; i < struktura[ostatniaWarstwa]; i++)//dla neuronow warstwy otatniej
             {
-                BledyNeuronow[ostatniaWarstwa - 1][i] = parametrUczenia * (OczekiwaneWyjscia[i] - WynikiSieci[ostatniaWarstwa][i])*(B* WynikiSieci[ostatniaWarstwa][i] * (1 - WynikiSieci[ostatniaWarstwa][i]));
+                BledyNeuronow[ostatniaWarstwa - 1][i] = parametrUczenia * (OczekiwaneWyjscia[i] - WynikiSieci[ostatniaWarstwa][i]) * (B * WynikiSieci[ostatniaWarstwa][i] * (1 - WynikiSieci[ostatniaWarstwa][i]));
 
             }
 
-            for (int nrWarstwy = struktura.Length - 2; nrWarstwy > 0; nrWarstwy--)//dla neuronow warstw ukrytych
+            for (int nrWarstwy = struktura.Length - 2; nrWarstwy > 0; nrWarstwy--)//dla neuronow warstw ukrytych -> iteracja po warstwach
             {
+                for(int i = 0; i < struktura[nrWarstwy]; i++)//iteracaja po liczbie neuronow w warstwie
+                {
+                    double SumaBledow = 0;
+                    for (int j = 0; j < struktura[nrWarstwy+1]; j++)//iteracja po liczbie neuronów w warstwie kolejnej -> każdy neuron z warstwy obeznej ma połączenie ze wszystkimi neuronami warstwy nastepnej
+                    {
+                        SumaBledow += BledyNeuronow[nrWarstwy + 1][j] * wagi[];
+                    }
+                    BledyNeuronow[nrWarstwy][i] = SumaBledow * (B * WynikiSieci[nrWarstwy][i]*(1- WynikiSieci[nrWarstwy][i]));
+                }
 
             }
 
@@ -58,7 +67,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             wyjscie[0] = new double[wejscie.Length];
             for (int i = 0; i < wejscie.Length; i++)
             {
-                wyjscie[0][i] = wejscie[i]; 
+                wyjscie[0][i] = wejscie[i];
             }
 
             int indeksWagi = 0;
@@ -70,14 +79,14 @@ namespace AlgorytmWsteczejPropagacjiXOR
 
                 for (int n = 0; n < LiczbaNeuronowWarstwy; n++)
                 {
-                    int k = LiczbaNuronowPoprzedniejWarstwy + 1;          
+                    int k = LiczbaNuronowPoprzedniejWarstwy + 1;
                     double[] wagiNeuronu = new double[k];
                     for (int j = 0; j < k; j++)
                     {
                         wagiNeuronu[j] = Wagi[indeksWagi];
                         indeksWagi++;
                     }
-                        
+
                     double z = Neuron(wagiNeuronu, wyjscie[i - 1]);
                     wyjscie[i][n] = FAktywacji(z);
                 }
@@ -95,8 +104,8 @@ namespace AlgorytmWsteczejPropagacjiXOR
             neuron += Wagi[0];
             for (int j = 1; j <= wejscie.Length; j++)
             {
-                neuron += Wagi[j] * wejscie[j-1];
-            }  
+                neuron += Wagi[j] * wejscie[j - 1];
+            }
             return neuron;
         }
         static void Main(string[] args)
@@ -107,18 +116,18 @@ namespace AlgorytmWsteczejPropagacjiXOR
             int liczbaNeuWarstwUkrytej = 2;
             int liczbaWyjsc = 1;
             int[] WarstwyIneurny = new int[liczbaWarstw];
-            WarstwyIneurny[0] = liczbaWejsc; 
+            WarstwyIneurny[0] = liczbaWejsc;
             for (int i = 1; i <= liczbaWarstwUkrytych; i++)
             {
-                WarstwyIneurny[i] = liczbaNeuWarstwUkrytej; 
+                WarstwyIneurny[i] = liczbaNeuWarstwUkrytej;
             }
             WarstwyIneurny[liczbaWarstw - 1] = liczbaWyjsc;
             double[] wagi = new double[] { 0.3, 0.1, 0.2, 0.6, 0.4, 0.5, 0.9, 0.7, -0.8 };
             int[] Struktura = new int[] { 2, 2, 1 };
-            double[] wejscie = new double[] {1,0};
-            double [][] WynikSieci = SiecNeuronowa(wejscie, wagi, Struktura);
+            double[] wejscie = new double[] { 1, 0 };
+            double[][] WynikSieci = SiecNeuronowa(wejscie, wagi, Struktura);
 
-            Console.WriteLine("Neuron 1 warstwy ukrytj: "+ WynikSieci[1][0]);
+            Console.WriteLine("Neuron 1 warstwy ukrytj: " + WynikSieci[1][0]);
             Console.WriteLine("Neuron 2 warstwy ukrytj: " + WynikSieci[1][1]);
             Console.WriteLine("Neuron wyjsciowy: " + WynikSieci[2][0]);
 
@@ -203,6 +212,6 @@ namespace AlgorytmWsteczejPropagacjiXOR
             */
             Console.ReadKey();
 
-        }       
+        }
     }
 }
