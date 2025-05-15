@@ -45,13 +45,13 @@ namespace AlgorytmWsteczejPropagacjiXOR
             for (int i = 0; i < wagi.Length; i++)
             {
                 WagiAfterUpdate[i] = new double[wagi[i].Length][];
-                for (int j =0; j < wagi[i].Length;j++)
+                for (int j = 0; j < wagi[i].Length; j++)
                 {
                     WagiAfterUpdate[i][j] = new double[wagi[i][j].Length];
                     WagiAfterUpdate[i][j][0] = wagi[i][j][0] + parametrUczenia * BledyNeuronow[i][j];//waga ukryta jako pierwsza
-                    for(int k = 1; k < wagi[i][j].Length; k++)
+                    for (int k = 1; k < wagi[i][j].Length; k++)
                     {
-                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + parametrUczenia * BledyNeuronow[i][j] * WynikiSieci[i][k - 1]; 
+                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + parametrUczenia * BledyNeuronow[i][j] * WynikiSieci[i][k - 1];
                     }
                 }
             }
@@ -97,7 +97,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             for (int i = 1; i < lWarstw; i++)
             {
                 int LiczbaNeuronowWarstwy = struktura[i];
-                int LiczbaNuronowPoprzedniejWarstwy = struktura[i - 1];
+
                 wyjscie[i] = new double[LiczbaNeuronowWarstwy];
 
                 for (int n = 0; n < LiczbaNeuronowWarstwy; n++)
@@ -158,7 +158,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             Console.WriteLine("Neuron 2 warstwy ukrytj: " + WynikSieci[1][1]);
             Console.WriteLine("Neuron wyjsciowy: " + WynikSieci[2][0]);
 
-            double[][] WejsciaSieci = new double[][]
+            double[][] WejsciaSieci1 = new double[][]
            {
                     new double[] { 0, 0 },
                     new double[] { 0, 1 },
@@ -201,16 +201,16 @@ namespace AlgorytmWsteczejPropagacjiXOR
             {
                 if (epoki > 0)
                 {
-                    for (int i = WejsciaSieci.Length - 1; i > 0; i--)
+                    for (int i = WejsciaSieci1.Length - 1; i > 0; i--)
                     {
                         int j = rand.Next(i + 1);
-                        (WejsciaSieci[i], WejsciaSieci[j]) = (WejsciaSieci[j], WejsciaSieci[i]);
+                        (WejsciaSieci1[i], WejsciaSieci1[j]) = (WejsciaSieci1[j], WejsciaSieci1[i]);
                         (OczekiwaneWYniki[i], OczekiwaneWYniki[j]) = (OczekiwaneWYniki[j], OczekiwaneWYniki[i]);
                     }
                 }
-                for (int i = 0; i < WejsciaSieci.Length; i++)
+                for (int i = 0; i < WejsciaSieci1.Length; i++)
                 {
-                    wagi = PropagacjaWsteczna(WejsciaSieci[i], new[] { OczekiwaneWYniki[i] }, wagi, Struktura, parametrUczenia);
+                    wagi = PropagacjaWsteczna(WejsciaSieci1[i], new[] { OczekiwaneWYniki[i] }, wagi, Struktura, parametrUczenia);
                 }
             }
 
@@ -222,6 +222,39 @@ namespace AlgorytmWsteczejPropagacjiXOR
             wejscieT[1] = Convert.ToDouble(Console.ReadLine());
             double[][] WynikSieci2 = SiecNeuronowa(wejscieT, wagi, Struktura);
             Console.WriteLine("Wyjscie sieci: " + WynikSieci2[2][0]);
+
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Wybierz zadanie i zatwierdz enterem:");
+                Console.WriteLine("1  XOR ");
+                Console.WriteLine("2  XOR i NOR");
+                Console.WriteLine("3  Sumator 3-3-2-2");
+                Console.WriteLine("4  Daj mi spokoj");
+                Console.Write("Twój wybór: ");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        XOR();
+                        break;
+                    case "2":
+                        XOR_NOR();
+                        break;
+                    case "3":
+                        Sumatorek();
+                        break;
+                    case "4":
+                        return;
+                    default:
+                        Console.WriteLine("Nieprawidłowy wybór!");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+
+
             /*
             double ParametrUczenia = 0.3;
             int LicznaNeuronów = 3;
@@ -304,5 +337,181 @@ namespace AlgorytmWsteczejPropagacjiXOR
             Console.ReadKey();
 
         }
+        static void MieszajDane(double[][] wejscia, double[] wyjscia)
+        {
+            for (int i = wejscia.Length - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                (wejscia[i], wejscia[j]) = (wejscia[j], wejscia[i]);
+                (wyjscia[i], wyjscia[j]) = (wyjscia[j], wyjscia[i]);
+            }
+        }
+
+        static void MieszajDane(double[][] wejscia, double[][] wyjscia)
+        {
+            for (int i = wejscia.Length - 1; i > 0; i--)
+            {
+                int j = rand.Next(i + 1);
+                (wejscia[i], wejscia[j]) = (wejscia[j], wejscia[i]);
+                (wyjscia[i], wyjscia[j]) = (wyjscia[j], wyjscia[i]);
+            }
+        }
+        static void XOR()
+        {
+            int[] struktura = {2, 2, 1 }; 
+            double[][][] wagi = WylosujWagi(struktura);
+            double parametrUczenia = 0.2;
+            double[][] WejsciaSieci = new double[][]
+           {
+                    new double[] { 0, 0 },
+                    new double[] { 0, 1 },
+                    new double[] { 1, 0 },
+                    new double[] { 1, 1 }
+           };
+
+            double[] WyjsciaOczekiwane = { 0, 1, 1, 0 };
+
+
+            for (int epoka = 0; epoka < 20000; epoka++)
+            {
+                if (epoka > 0)
+                {
+                    MieszajDane(WejsciaSieci, WyjsciaOczekiwane);
+                }
+                for (int i = 0; i < WejsciaSieci.Length; i++)
+                {
+                    wagi = PropagacjaWsteczna(WejsciaSieci[i], new[] { WyjsciaOczekiwane[i] }, wagi, struktura, parametrUczenia);
+                }
+            }
+            for(int i = 0; i < WejsciaSieci.Length; i++)
+            {
+                double[] wejscieT = new double[2];
+                Console.WriteLine("Testowanie sieci neuronowej : ");
+                Console.WriteLine("Podaj wartość 0/1 dla piwerszego wejścia XOR (ZATWIERDZ ENTEREM):");
+                wejscieT[0] = Convert.ToDouble(Console.ReadLine());
+                Console.WriteLine("Podaj wartość 0/1 dla drugiego wejścia XOR (ZATWIERDZ ENTEREM):");
+                wejscieT[1] = Convert.ToDouble(Console.ReadLine());
+                double[][] WynikSieci2 = SiecNeuronowa(wejscieT, wagi, struktura);
+                Console.WriteLine("Wyjscie sieci: " + WynikSieci2[2][0]);
+            }
+            Console.Write("Kliknij ENTER aby przejsc dalej");
+            Console.ReadKey();
+
+        }
+
+        static void XOR_NOR()
+        {
+            int[] struktura = { 2, 2, 2, 2 }; 
+            double[][][] wagi = WylosujWagi(struktura);
+            double parametrUczenia = 0.1;
+
+            double[][] WejsciaSieci = {
+                new double[] { 0, 0 },
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 1, 1 }
+            };
+
+            double[][] WyjsciaOczekiwane = {
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 1, 0 },
+                new double[] { 0, 0 }
+            };
+
+            for (int epoka = 0; epoka < 40000; epoka++)
+            {
+                if (epoka > 0)
+                {
+                    MieszajDane(WejsciaSieci, WyjsciaOczekiwane);
+                }
+                for (int i = 0; i < WejsciaSieci.Length; i++)
+                {
+                    wagi = PropagacjaWsteczna(WejsciaSieci[i], WyjsciaOczekiwane[i],wagi,struktura, parametrUczenia);
+                }
+            }
+
+            for (int i = 0; i < WejsciaSieci.Length; i++)
+            {
+                double[] wejscieT = new double[2];
+                Console.WriteLine("Testowanie sieci (XOR i NOR):");
+                Console.Write("Podaj wartość pierwszego wejścia): ");
+                wejscieT[0] = Convert.ToDouble(Console.ReadLine());
+                Console.Write("Podaj wartość drugiego wejścia : ");
+                wejscieT[1] = Convert.ToDouble(Console.ReadLine());
+
+                double[][] wynik = SiecNeuronowa(wejscieT, wagi, struktura);
+                Console.WriteLine($"XOR: {wynik.Last()[0]}");
+                Console.WriteLine($"NOR: {wynik.Last()[1]}");
+            }
+            Console.Write("Kliknij ENTER aby przejsc dalej");
+            Console.ReadKey();
+
+        }
+
+        static void Sumatorek()
+        {
+            int[] struktura = { 3, 3, 2, 2 };
+            double[][][] wagi = WylosujWagi(struktura);
+            double parametrUczenia = 0.05;
+
+            double[][] WejsciaSieci = {
+                new double[] { 0, 0, 0 },
+                new double[] { 0, 0, 1 },
+                new double[] { 0, 1, 0 },
+                new double[] { 0, 1, 1 },
+                new double[] { 1, 0, 0 },
+                new double[] { 1, 0, 1 }, 
+                new double[] { 1, 1, 0 }, 
+                new double[] { 1, 1, 1 }  
+             };
+
+            double[][] WyjsciaOczekiwane = {
+                new double[] { 0, 0 },
+                new double[] { 1, 0 },
+                new double[] { 1, 0 },
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 0, 1 },
+                new double[] { 0, 1 },
+                new double[] { 1, 1 }
+            };
+
+
+            for (int epoka = 0; epoka < 80000; epoka++)
+            {
+                if (epoka > 0)
+                {
+                    MieszajDane(WejsciaSieci, WyjsciaOczekiwane);
+                }
+                for (int i = 0; i < WejsciaSieci.Length; i++)
+                {
+                    wagi = PropagacjaWsteczna(WejsciaSieci[i],WyjsciaOczekiwane[i],wagi,struktura,parametrUczenia );
+                }
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                double[] wejscieT = new double[3];
+                Console.WriteLine("Testowanie sumatora :");
+                Console.Write("Podaj wejscie1 (0/1): ");
+                wejscieT[0] = Convert.ToDouble(Console.ReadLine());
+                Console.Write("Podaj wejscie2 (0/1): ");
+                wejscieT[1] = Convert.ToDouble(Console.ReadLine());
+                Console.Write("Podaj wejscie3 (0/1): ");
+                wejscieT[2] = Convert.ToDouble(Console.ReadLine());
+
+                double[][] wynik = SiecNeuronowa(wejscieT, wagi, struktura);
+                Console.WriteLine($"WYjscie0: {wynik.Last()[0]}");
+                Console.WriteLine($"Wyjscie1: {wynik.Last()[1]}");
+
+            }
+            Console.Write("Kliknij ENTER aby przejsc dalej");
+            Console.ReadKey();
+        }
+
+
+
+
     }
 }
