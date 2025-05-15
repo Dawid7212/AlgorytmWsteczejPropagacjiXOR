@@ -22,7 +22,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             BledyNeuronow[ostatniaWarstwa - 1] = new double[struktura[ostatniaWarstwa]];
             for (int i = 0; i < struktura[ostatniaWarstwa]; i++)//dla neuronow warstwy otatniej
             {
-                BledyNeuronow[ostatniaWarstwa - 1][i] = parametrUczenia * (OczekiwaneWyjscia[i] - WynikiSieci[ostatniaWarstwa][i]) * (B * WynikiSieci[ostatniaWarstwa][i] * (1 - WynikiSieci[ostatniaWarstwa][i]));
+                BledyNeuronow[ostatniaWarstwa - 1][i] =  (OczekiwaneWyjscia[i] - WynikiSieci[ostatniaWarstwa][i]) * (B * WynikiSieci[ostatniaWarstwa][i] * (1 - WynikiSieci[ostatniaWarstwa][i]));
 
             }
 
@@ -34,7 +34,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
                     double SumaBledow = 0;
                     for (int j = 0; j < struktura[nrWarstwy + 1]; j++)//iteracja po liczbie neuronów w warstwie kolejnej -> każdy neuron z warstwy obeznej ma połączenie ze wszystkimi neuronami warstwy nastepnej
                     {
-                        SumaBledow += BledyNeuronow[nrWarstwy + 1][j] * wagi[nrWarstwy][j][i + 1];//tylko dla połączeń miedzy neuronami, błąd neuronu kolejnego* waga łącząca te nurony
+                        SumaBledow += BledyNeuronow[nrWarstwy][j] * wagi[nrWarstwy][j][i + 1];//tylko dla połączeń miedzy neuronami, błąd neuronu kolejnego* waga łącząca te nurony
                     }
                     BledyNeuronow[nrWarstwy - 1][i] = SumaBledow * (B * WynikiSieci[nrWarstwy][i] * (1 - WynikiSieci[nrWarstwy][i]));
                 }
@@ -48,10 +48,10 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 for (int j =0; j < wagi[i].Length;j++)
                 {
                     WagiAfterUpdate[i][j] = new double[wagi[i][j].Length];
-                    WagiAfterUpdate[i][j][0] = wagi[i][j][0] + BledyNeuronow[i][j];//waga ukryta jako pierwsza
+                    WagiAfterUpdate[i][j][0] = wagi[i][j][0] + parametrUczenia * BledyNeuronow[i][j];//waga ukryta jako pierwsza
                     for(int k = 1; k < wagi[i][j].Length; k++)
                     {
-                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + BledyNeuronow[i][j] * WynikiSieci[i][k - 1]; 
+                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + parametrUczenia * BledyNeuronow[i][j] * WynikiSieci[i][k - 1]; 
                     }
                 }
             }
@@ -71,6 +71,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 wagi[i] = new double[strukturaSieci[i + 1]][];//+1 bo liczba wag zalezna od nastepnej warstwy
                 for(int j =0; j < strukturaSieci[i + 1]; j++)
                 {
+                    wagi[i][j] = new double[strukturaSieci[i]+1];
                     for(int ktoraWaga = 0; ktoraWaga < strukturaSieci[i] + 1; ktoraWaga++)
                     {
                         wagi[i][j][ktoraWaga] = (rand.NextDouble()*2)-1;
@@ -148,6 +149,8 @@ namespace AlgorytmWsteczejPropagacjiXOR
             wagi[1][0] = new double[] { 0.9, 0.7, -0.8 };
            
             int[] Struktura = new int[] { 2, 2, 1 };
+            int[] Struktura2 = new int[] { 2, 2, 2, 2 };
+            int[] Struktura3 = new int[] { 3, 3, 2, 2 };
             double[] wejscie = new double[] { 1, 0 };
             double[][] WynikSieci = SiecNeuronowa(wejscie, wagi, Struktura);
 
@@ -163,95 +166,142 @@ namespace AlgorytmWsteczejPropagacjiXOR
                     new double[] { 1, 1 }
            };
             double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
+            double[][] OczekiwaneWYniki2 = new double[][]
+            {
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 0},
+                new double[]{0, 0},
+            };
+            double[][] WejsciaSieci3 = new double[][]
+            {
+                new double[] { 0, 0, 0 },
+                new double[] { 0, 1, 0 },
+                new double[] { 1, 0, 0 },
+                new double[] { 1, 1, 0 },
+                new double[] { 0, 0, 1 },
+                new double[] { 0, 1, 1 },
+                new double[] { 1, 0, 1 },
+                new double[] { 1, 1, 1 }
+            };
+
+            double[][] OczekiwaneWyniki3 = new double[][]
+            {
+                new double[] { 0, 0 },
+                new double[] { 1, 0 },
+                new double[] { 1, 0 },
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 0, 1 },
+                new double[] { 0, 1 },
+                new double[] { 1, 1 }
+            };
 
             for (int epoki = 0; epoki < 20000; epoki++)
             {
+                if (epoki > 0)
+                {
+                    for (int i = WejsciaSieci.Length - 1; i > 0; i--)
+                    {
+                        int j = rand.Next(i + 1);
+                        (WejsciaSieci[i], WejsciaSieci[j]) = (WejsciaSieci[j], WejsciaSieci[i]);
+                        (OczekiwaneWYniki[i], OczekiwaneWYniki[j]) = (OczekiwaneWYniki[j], OczekiwaneWYniki[i]);
+                    }
+                }
                 for (int i = 0; i < WejsciaSieci.Length; i++)
                 {
-                    // Propagacja wsteczna i aktualizacja wag
                     wagi = PropagacjaWsteczna(WejsciaSieci[i], new[] { OczekiwaneWYniki[i] }, wagi, Struktura, parametrUczenia);
                 }
             }
-                /*
-                double ParametrUczenia = 0.3;
-                int LicznaNeuronów = 3;
-                int LiczbaWagNeurona = 3;
-                double B = 1;
-                WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
-                for (int i = 0; i < WylosowaneWagi.Length; i++)
+
+            double[] wejscieT = new double[2];
+            Console.WriteLine("Testowanie sieci neuronowej : ");
+            Console.WriteLine("Podaj wartość 0/1 dla piwerszego wejścia XOR (ZATWIERDZ ENTEREM):");
+            wejscieT[0] = Convert.ToDouble(Console.ReadLine());
+            Console.WriteLine("Podaj wartość 0/1 dla drugiego wejścia XOR (ZATWIERDZ ENTEREM):");
+            wejscieT[1] = Convert.ToDouble(Console.ReadLine());
+            double[][] WynikSieci2 = SiecNeuronowa(wejscieT, wagi, Struktura);
+            Console.WriteLine("Wyjscie sieci: " + WynikSieci2[2][0]);
+            /*
+            double ParametrUczenia = 0.3;
+            int LicznaNeuronów = 3;
+            int LiczbaWagNeurona = 3;
+            double B = 1;
+            WylosowaneWagi = new double[LicznaNeuronów * LiczbaWagNeurona];
+            for (int i = 0; i < WylosowaneWagi.Length; i++)
+            {
+                WylosowaneWagi[i] = (rand.NextDouble() * 2) - 1;
+            }
+            //WylosowaneWagi = new double[] { 0.3, 0.1, 0.2, 0.6, 0.4, 0.5, 0.9, 0.7, -0.8 };//tego uzywalem tylko dla testow sieci
+
+
+
+            double[][] WejsciaSieci = new double[][]
+            {
+                new double[] { 0, 0 },
+                new double[] { 0, 1 },
+                new double[] { 1, 0 },
+                new double[] { 1, 1 }
+            };
+            double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
+
+            for (int epoki = 0; epoki < 20000; epoki++)
+            {
+                //dla epok kolejnych niż pierwsza - wejscia uczące sieć są w różniej kolejności
+                if (epoki > 0)
                 {
-                    WylosowaneWagi[i] = (rand.NextDouble() * 2) - 1;
-                }
-                //WylosowaneWagi = new double[] { 0.3, 0.1, 0.2, 0.6, 0.4, 0.5, 0.9, 0.7, -0.8 };//tego uzywalem tylko dla testow sieci
-
-
-
-                double[][] WejsciaSieci = new double[][]
-                {
-                    new double[] { 0, 0 },
-                    new double[] { 0, 1 },
-                    new double[] { 1, 0 },
-                    new double[] { 1, 1 }
-                };
-                double[] OczekiwaneWYniki = { 0, 1, 1, 0 };
-
-                for (int epoki = 0; epoki < 20000; epoki++)
-                {
-                    //dla epok kolejnych niż pierwsza - wejscia uczące sieć są w różniej kolejności
-                    if (epoki > 0)
+                    for (int i = WejsciaSieci.Length - 1; i > 0; i--)
                     {
-                        for (int i = WejsciaSieci.Length - 1; i > 0; i--)
-                        {
-                            int j = rand.Next(i + 1);
-                            (WejsciaSieci[i], WejsciaSieci[j]) = (WejsciaSieci[j], WejsciaSieci[i]);
-                            (OczekiwaneWYniki[i], OczekiwaneWYniki[j]) = (OczekiwaneWYniki[j], OczekiwaneWYniki[i]);
-                        }
+                        int j = rand.Next(i + 1);
+                        (WejsciaSieci[i], WejsciaSieci[j]) = (WejsciaSieci[j], WejsciaSieci[i]);
+                        (OczekiwaneWYniki[i], OczekiwaneWYniki[j]) = (OczekiwaneWYniki[j], OczekiwaneWYniki[i]);
                     }
-
-                    for (int i = 0; i < WejsciaSieci.Length; i++)
-                    {
-
-                        (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona, WarstwyIneurny);
-                        double d = OczekiwaneWYniki[i];
-                        //double bladwyjscia1 = d - Nwyjsciowy;
-                        //Console.WriteLine("Blad wyjsccia1 = "+bladwyjscia1);
-                        double PoprawkaWyjscia = ParametrUczenia*(d - Nwyjsciowy) *(B* Nwyjsciowy * (1 - Nwyjsciowy));//pmUczenia*błąd wyjscia * pochodna
-                        double PoprawkaNUkryty1 = PoprawkaWyjscia * WylosowaneWagi[7] *(B* NUkryrty1 * (1 - NUkryrty1));
-                        double PoprawkaNUkryty2 = PoprawkaWyjscia * WylosowaneWagi[8] * (B*Nukryty2 * (1 - Nukryty2));
-
-                        WylosowaneWagi[6] +=  PoprawkaWyjscia;
-                        WylosowaneWagi[7] += (PoprawkaWyjscia * NUkryrty1);
-                        WylosowaneWagi[8] += (PoprawkaWyjscia * Nukryty2);
-
-                        WylosowaneWagi[0] += PoprawkaNUkryty1;
-                        WylosowaneWagi[1] += (PoprawkaNUkryty1 * WejsciaSieci[i][0]);
-                        WylosowaneWagi[2] += (PoprawkaNUkryty1 * WejsciaSieci[i][1]);
-
-                        WylosowaneWagi[3] += PoprawkaNUkryty2;
-                        WylosowaneWagi[4] += PoprawkaNUkryty2 * WejsciaSieci[i][0];
-                        WylosowaneWagi[5] += PoprawkaNUkryty2 * WejsciaSieci[i][1];
-
-                        //(double NUkryrty1Test, double Nukryty2Test, double NwyjsciowyTest) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
-                        // double bladwyjscia2 = d - NwyjsciowyTest;
-                        //Console.WriteLine("Blad wyjsccia2 = " + bladwyjscia2);
-                    }
-
                 }
-                Console.WriteLine("Końcowe wagi:");
-                Console.WriteLine("pierwszy neuron (warstwa ukryta) = " + WylosowaneWagi[0] + " , " + WylosowaneWagi[1] + " , " + WylosowaneWagi[2]);
-                Console.WriteLine("drugi neuron (warstwa ukryta) = " + WylosowaneWagi[3] + " , " + WylosowaneWagi[4] + " , " + WylosowaneWagi[5]);
-                Console.WriteLine("ostatni neuron (warstwa wyjciowa) = " + WylosowaneWagi[6] + " , " + WylosowaneWagi[7] + " , " + WylosowaneWagi[8]);
 
-                double[] wejscie = new double[2];
-                Console.WriteLine("Testowanie sieci neuronowej : ");
-                Console.WriteLine("Podaj wartość 0/1 dla piwerszego wejścia XOR (ZATWIERDZ ENTEREM):");
-                wejscie[0] = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine("Podaj wartość 0/1 dla drugiego wejścia XOR (ZATWIERDZ ENTEREM):");
-                wejscie[1] = Convert.ToDouble(Console.ReadLine());
-                (double x1, double x2, double wyjscie) = SiecNeuronowa(wejscie, WylosowaneWagi, LiczbaWagNeurona, WarstwyIneurny);
-                Console.WriteLine("Wyjscie sieci: " + wyjscie);
-                */
-                Console.ReadKey();
+                for (int i = 0; i < WejsciaSieci.Length; i++)
+                {
+
+                    (double NUkryrty1, double Nukryty2, double Nwyjsciowy) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona, WarstwyIneurny);
+                    double d = OczekiwaneWYniki[i];
+                    //double bladwyjscia1 = d - Nwyjsciowy;
+                    //Console.WriteLine("Blad wyjsccia1 = "+bladwyjscia1);
+                    double PoprawkaWyjscia = ParametrUczenia*(d - Nwyjsciowy) *(B* Nwyjsciowy * (1 - Nwyjsciowy));//pmUczenia*błąd wyjscia * pochodna
+                    double PoprawkaNUkryty1 = PoprawkaWyjscia * WylosowaneWagi[7] *(B* NUkryrty1 * (1 - NUkryrty1));
+                    double PoprawkaNUkryty2 = PoprawkaWyjscia * WylosowaneWagi[8] * (B*Nukryty2 * (1 - Nukryty2));
+
+                    WylosowaneWagi[6] +=  PoprawkaWyjscia;
+                    WylosowaneWagi[7] += (PoprawkaWyjscia * NUkryrty1);
+                    WylosowaneWagi[8] += (PoprawkaWyjscia * Nukryty2);
+
+                    WylosowaneWagi[0] += PoprawkaNUkryty1;
+                    WylosowaneWagi[1] += (PoprawkaNUkryty1 * WejsciaSieci[i][0]);
+                    WylosowaneWagi[2] += (PoprawkaNUkryty1 * WejsciaSieci[i][1]);
+
+                    WylosowaneWagi[3] += PoprawkaNUkryty2;
+                    WylosowaneWagi[4] += PoprawkaNUkryty2 * WejsciaSieci[i][0];
+                    WylosowaneWagi[5] += PoprawkaNUkryty2 * WejsciaSieci[i][1];
+
+                    //(double NUkryrty1Test, double Nukryty2Test, double NwyjsciowyTest) = SiecNeuronowa(WejsciaSieci[i], WylosowaneWagi, LiczbaWagNeurona);
+                    // double bladwyjscia2 = d - NwyjsciowyTest;
+                    //Console.WriteLine("Blad wyjsccia2 = " + bladwyjscia2);
+                }
+
+            }
+            Console.WriteLine("Końcowe wagi:");
+            Console.WriteLine("pierwszy neuron (warstwa ukryta) = " + WylosowaneWagi[0] + " , " + WylosowaneWagi[1] + " , " + WylosowaneWagi[2]);
+            Console.WriteLine("drugi neuron (warstwa ukryta) = " + WylosowaneWagi[3] + " , " + WylosowaneWagi[4] + " , " + WylosowaneWagi[5]);
+            Console.WriteLine("ostatni neuron (warstwa wyjciowa) = " + WylosowaneWagi[6] + " , " + WylosowaneWagi[7] + " , " + WylosowaneWagi[8]);
+
+            double[] wejscie = new double[2];
+            Console.WriteLine("Testowanie sieci neuronowej : ");
+            Console.WriteLine("Podaj wartość 0/1 dla piwerszego wejścia XOR (ZATWIERDZ ENTEREM):");
+            wejscie[0] = Convert.ToDouble(Console.ReadLine());
+            Console.WriteLine("Podaj wartość 0/1 dla drugiego wejścia XOR (ZATWIERDZ ENTEREM):");
+            wejscie[1] = Convert.ToDouble(Console.ReadLine());
+            (double x1, double x2, double wyjscie) = SiecNeuronowa(wejscie, WylosowaneWagi, LiczbaWagNeurona, WarstwyIneurny);
+            Console.WriteLine("Wyjscie sieci: " + wyjscie);
+            */
+            Console.ReadKey();
 
         }
     }
