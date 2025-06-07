@@ -34,9 +34,10 @@ namespace AlgorytmWsteczejPropagacjiXOR
                     double SumaBledow = 0;
                     for (int j = 0; j < struktura[nrWarstwy + 1]; j++)//iteracja po liczbie neuronów w warstwie kolejnej -> każdy neuron z warstwy obeznej ma połączenie ze wszystkimi neuronami warstwy nastepnej
                     {
-                        SumaBledow += BledyNeuronow[nrWarstwy][j] * wagi[nrWarstwy][j][i + 1];//tylko dla połączeń miedzy neuronami, błąd neuronu kolejnego* waga łącząca te nurony
+                        SumaBledow += BledyNeuronow[nrWarstwy][j] * wagi[nrWarstwy][j][i + 1];//tylko dla połączeń miedzy neuronami, suma ( błąd neuronu kolejnego* waga łącząca te nurony )
                     }
-                    BledyNeuronow[nrWarstwy - 1][i] = SumaBledow * (B * WynikiSieci[nrWarstwy][i] * (1 - WynikiSieci[nrWarstwy][i]));
+                    //bląd pojedyńczego neurona:
+                    BledyNeuronow[nrWarstwy - 1][i] = SumaBledow * (B * WynikiSieci[nrWarstwy][i] * (1 - WynikiSieci[nrWarstwy][i]));//sumabledow* pochodna funkcji aktywacji sigmoidalnej dla danego neuronu, ta pochodna określa jak bardzo zmiana wejścia do neuronu wpływa na jego wyjsie
                 }
 
             }
@@ -48,10 +49,10 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 for (int j = 0; j < wagi[i].Length; j++)
                 {
                     WagiAfterUpdate[i][j] = new double[wagi[i][j].Length];
-                    WagiAfterUpdate[i][j][0] = wagi[i][j][0] + parametrUczenia * BledyNeuronow[i][j];//waga ukryta jako pierwsza
+                    WagiAfterUpdate[i][j][0] = wagi[i][j][0] + (parametrUczenia * BledyNeuronow[i][j]);//waga ukryta jako pierwsza : nowaWaga = starawaga + (parametrUczenia * bladneuronu)
                     for (int k = 1; k < wagi[i][j].Length; k++)
                     {
-                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + parametrUczenia * BledyNeuronow[i][j] * WynikiSieci[i][k - 1];
+                        WagiAfterUpdate[i][j][k] = wagi[i][j][k] + (parametrUczenia * BledyNeuronow[i][j] * WynikiSieci[i][k - 1]); //nowawaga = starawaga + (parametrUczenia * bladneuronu * wartośćwejścia)
                     }
                 }
             }
@@ -64,13 +65,13 @@ namespace AlgorytmWsteczejPropagacjiXOR
         {
             //int liczbaWag = 0;
             double[][][] wagi = new double[strukturaSieci.Length - 1][][];
-            for (int i = 0; i < strukturaSieci.Length - 1; i++)
+            for (int i = 0; i < strukturaSieci.Length - 1; i++)// i w tej funkcji określa, o którym połączeniu między warstwami jest mowa (połączeń jest o 1 mniej niż wartstw)  
             {
-                wagi[i] = new double[strukturaSieci[i + 1]][];//+1 bo liczba wag zalezna od nastepnej warstwy
-                for(int j =0; j < strukturaSieci[i + 1]; j++)
+                wagi[i] = new double[strukturaSieci[i + 1]][];//i+1 bo zaczynamy od warstwy kolejnej niż wejściowa
+                for(int j =0; j < strukturaSieci[i + 1]; j++)//j określa o któym neuronie jest mowa
                 {
-                    wagi[i][j] = new double[strukturaSieci[i]+1];
-                    for(int ktoraWaga = 0; ktoraWaga < strukturaSieci[i] + 1; ktoraWaga++)
+                    wagi[i][j] = new double[strukturaSieci[i]+1];//bo przecież dodatkowe miejsce dla wagi nauronu - biasu
+                    for(int ktoraWaga = 0; ktoraWaga < strukturaSieci[i] + 1; ktoraWaga++)//strukturaSieci[i] + 1 bo: liczba neuronów + bias = liczba wag danej warstwy
                     {
                         wagi[i][j][ktoraWaga] = (rand.NextDouble()*2)-1;
                     }
@@ -87,7 +88,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             wyjscie[0] = new double[wejscie.Length];
             for (int i = 0; i < wejscie.Length; i++)
             {
-                wyjscie[0][i] = wejscie[i];
+                wyjscie[0][i] = wejscie[i]; // pierwsza warstwa odpowiada po prostu wejsciu
             }
 
 
@@ -101,7 +102,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 {
                     double[] wagiNeuronu = Wagi[i - 1][n];
 
-                    double z = Neuron(wagiNeuronu, wyjscie[i - 1]);
+                    double z = Neuron(wagiNeuronu, wyjscie[i - 1]); //każda waga jest mnożona przez wynik odpowiadającego jej neuronu z poprzedniej warstwy
                     wyjscie[i][n] = FAktywacji(z);
                 }
             }
@@ -124,6 +125,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
         }
         static void Main(string[] args)
         {
+            /*
             double parametrUczenia = 0.2;
             int liczbaWejsc = 2;
             int liczbaWarstw = 4;
@@ -154,7 +156,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             Console.WriteLine("Neuron 1 warstwy ukrytj: " + WynikSieci[1][0]);
             Console.WriteLine("Neuron 2 warstwy ukrytj: " + WynikSieci[1][1]);
             Console.WriteLine("Neuron wyjsciowy: " + WynikSieci[2][0]);
-
+            
             double[][] WejsciaSieci1 = new double[][]
            {
                     new double[] { 0, 0 },
@@ -193,7 +195,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 new double[] { 0, 1 },
                 new double[] { 1, 1 }
             };
-
+            
             for (int epoki = 0; epoki < 20000; epoki++)
             {
                 if (epoki > 0)
@@ -219,7 +221,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
             wejscieT[1] = Convert.ToDouble(Console.ReadLine());
             double[][] WynikSieci2 = SiecNeuronowa(wejscieT, wagi, Struktura);
             Console.WriteLine("Wyjscie sieci: " + WynikSieci2[2][0]);
-
+            */
 
             while (true)
             {
@@ -295,7 +297,7 @@ namespace AlgorytmWsteczejPropagacjiXOR
                 }
                 for (int i = 0; i < WejsciaSieci.Length; i++)
                 {
-                    wagi = PropagacjaWsteczna(WejsciaSieci[i], new[] { WyjsciaOczekiwane[i] }, wagi, struktura, parametrUczenia);
+                    wagi = PropagacjaWsteczna(WejsciaSieci[i], new double[] { WyjsciaOczekiwane[i] }, wagi, struktura, parametrUczenia);// dla oczekiwanych wyjsc zamiana typu z double na jedoelementowa tablicę double[]
                 }
             }
             for(int i = 0; i < WejsciaSieci.Length; i++)
